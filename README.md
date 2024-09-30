@@ -12,7 +12,7 @@ Jie Zhou,
 ## Introduction
 
 <p align="center">
-    <img src="figures/benchmark.png" width= "500" alt="fig1" />
+    <img src="figures/benchmark.png"  alt="fig1" />
 </p>
 
 The general idea of SimPro addressing the ReaLTSSL
@@ -25,7 +25,7 @@ the distribution of unlabeled data. This paradigm shift allows for
 greater flexibility and applicability in diverse ReaLTSSL scenarios.
 
 <p align="center">
-    <img src="figures/framework.png" alt="fig1" />
+    <img src="figures/framework.png"  alt="fig2" />
 </p>
 
 The SimPro Framework Overview. This framework distinctively separates the conditional and marginal (class) distributions.
