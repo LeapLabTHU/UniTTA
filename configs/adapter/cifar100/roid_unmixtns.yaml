@@ -1,0 +1,11 @@
+OPTIM:
+  METHOD: Adam
+  STEPS: 1
+  BETA: 0.9
+  WD: 0.
+  LR: 0.001
+
+ADAPTER:
+  NAME: roid
+  ROID:
+    USE_UNMIXTNS: True

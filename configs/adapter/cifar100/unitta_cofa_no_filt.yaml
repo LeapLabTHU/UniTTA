@@ -1,0 +1,6 @@
+ADAPTER:
+  NAME: unitta_cofa
+  UNITTA_COFA:
+    CLASSIFIER: classifier # classifier name of the model
+    #FILT: True # implement the confidence filtering for COFA
+    FILT: False # implement the confidence filtering for COFA

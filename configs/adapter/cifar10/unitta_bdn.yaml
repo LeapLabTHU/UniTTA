@@ -1,0 +1,21 @@
+OPTIM:
+  METHOD: Adam
+  STEPS: 1
+  BETA: 0.9
+  WD: 0.
+
+ADAPTER:
+  NAME: unitta_bdn
+  UNITTA_BDN:
+    ETA: 0.01 # 0.01 on CIFAR10, 0.05 on CIFAR100, 0.5 on ImageNet1K. This term is related with the number of categories. [Roughly follow max(0.0005 * K., 0.01)]
+    GAMMA: 0. # 0.0 on CIFAR10, 0.1 on CIFAR100, 0.5 on ImageNet1K. Follow TRIBE for global statistics
+    MODE: dynamic # "dynamic" or "static" or "upper"
+    # The term 'upper' refers to the upper bound where the ground truth of the domain is known. 'Static' implies that the number of domains is known, while 'dynamic' indicates that the number of domains is unknown and requires dynamic estimation.
+    LAYER: block2.layer.0.bn1 # layer for domain prediction
+    FILT: True # implement the confidence filtering that considers the prediction results of the Forward 2 and 3.
+    #FILT: False # implement the confidence filtering that considers the prediction results of the Forward 2 and 3.
+    MODE_DOMAIN_PREDICTION: single # "single" or "double" or "both"
+    # The term 'single' refers to predicting the domain according to the current sample, 'double' refers to predicting the domain according to the current sample and the previous sample, and 'both' refers to predicting the domain by filter.
+    PRUNE: False # This parameter indicates whether to prune the expanded domain, considering the limited GPU memory.
+    MAX_DOMAINS: 64 # only effective when PRUNE is set to True
+

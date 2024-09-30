@@ -1,0 +1,19 @@
+OPTIM:
+  METHOD: Adam
+  STEPS: 1
+  BETA: 0.9
+  WD: 0.
+
+ADAPTER:
+  NAME: unitta
+  UNITTA:
+    ETA: 0.5 # 0.01 on CIFAR10, 0.05 on CIFAR100, 0.5 on ImageNet1K. Follow TRIBE
+    GAMMA: 0.5 # 0.0 on CIFAR10, 0.1 on CIFAR100, 0.5 on ImageNet1K. Follow TRIBE for global statistics
+    LAYER: model.layer3.0.bn1 # layer for domain prediction
+    CLASSIFIER: model.fc # classifier name of the model
+    MODE_DOMAIN_PREDICTION: single # "single" or "double" or "both"
+    # The term 'single' refers to predicting the domain according to the current sample, 'double' refers to predicting the domain according to the current sample and the previous sample, and 'both' refers to predicting the domain by filter
+    FILT: True # implement the confidence filtering that considers the prediction results of the Forward 2 and 3
+    PRUNE: True # This parameter indicates whether to prune the expanded domain, considering the limited GPU memory.
+    MAX_DOMAINS: 32 # only effective when PRUNE is set to True
+

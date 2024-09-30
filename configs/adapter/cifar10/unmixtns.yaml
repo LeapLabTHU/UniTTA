@@ -1,0 +1,5 @@
+ADAPTER:
+  NAME: unmixtns
+  UNMIXTNS:
+    NUM_COMPONENTS: 16
+    BATCH_SIZE_MAX: 64
