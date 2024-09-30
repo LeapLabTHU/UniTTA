@@ -5,13 +5,9 @@ from .tribe_bbn import TRIBE_BBN
 
 from .lame import LAME
 from .tent import TENT
-from .pl import PL
 from .bn import BN
 from .note import NOTE
-from .ttac import TTAC
-from .eata import EATA
 from .cotta import CoTTA
-from .petal import PETALFim
 from .test import TEST
 from .unitta_cofa import UNITTA_COFA
 from .unitta_bdn import UNITTA_BDN
@@ -31,16 +27,10 @@ def build_adapter(cfg) -> BaseAdapter:
         return LAME
     elif cfg.ADAPTER.NAME == "tent":
         return TENT
-    elif cfg.ADAPTER.NAME == "pl":
-        return PL
     elif cfg.ADAPTER.NAME == "bn":
         return BN
     elif cfg.ADAPTER.NAME == "note":
         return NOTE
-    elif cfg.ADAPTER.NAME == "ttac":
-        return TTAC
-    elif cfg.ADAPTER.NAME == "eata":
-        return EATA
     elif cfg.ADAPTER.NAME == "cotta":
         return CoTTA
     elif cfg.ADAPTER.NAME == "petal":

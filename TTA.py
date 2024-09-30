@@ -13,7 +13,8 @@ from tqdm import tqdm
 from setproctitle import setproctitle
 from sklearn.metrics import confusion_matrix
 import numpy as np
-import wandb
+
+# import wandb
 
 import time
 
@@ -70,7 +71,7 @@ def testTimeAdaptation(cfg, loader, processor, logger):
         elif cfg.ADAPTER.NAME == "unitta":
             output, num_domain = tta_model(data)
 
-            wandb.log({"num_domain": num_domain}, commit=False, step=batch_id)
+            # wandb.log({"num_domain": num_domain}, commit=False, step=batch_id)
 
         else:
             output = tta_model(data)
@@ -95,10 +96,11 @@ def testTimeAdaptation(cfg, loader, processor, logger):
                 )
             else:
                 tbar.set_postfix(acc=processor.cumulative_acc())
-            wandb.log({"acc": processor.cumulative_acc()}, commit=True, step=batch_id)
+            # wandb.log({"acc": processor.cumulative_acc()}, commit=True, step=batch_id)
 
         else:
-            wandb.log({"acc": processor.cumulative_acc()}, commit=False, step=batch_id)
+            pass
+            # wandb.log({"acc": processor.cumulative_acc()}, commit=False, step=batch_id)
 
     processor.calculate()
 
@@ -115,15 +117,15 @@ def testTimeAdaptation(cfg, loader, processor, logger):
 
         key = list(processor.label2name.keys())[i]
 
-        wandb.run.summary[f"err_{processor.label2name[key]}"] = (
-            1 - processor.result_per_class[key]
-        ) * 100
-        wandb.run.summary[f"catAvgErr_{processor.label2name[key]}"] = (
-            1.0 - catAvg[i]
-        ) * 100.0
+        # wandb.run.summary[f"err_{processor.label2name[key]}"] = (
+        #    1 - processor.result_per_class[key]
+        # ) * 100
+        # wandb.run.summary[f"catAvgErr_{processor.label2name[key]}"] = (
+        #    1.0 - catAvg[i]
+        # ) * 100.0
 
-    wandb.run.summary["err_total"] = (1 - processor.cumulative_acc()) * 100
-    wandb.run.summary["catAvgErr_total"] = 100.0 - catAvg.mean() * 100.0
+    # wandb.run.summary["err_total"] = (1 - processor.cumulative_acc()) * 100
+    # wandb.run.summary["catAvgErr_total"] = 100.0 - catAvg.mean() * 100.0
 
     # str_ += "Avg: %.2f\n" % (catAvg.mean() * 100.)
     logger.info("per domain catAvg:\n" + str_)
@@ -131,7 +133,7 @@ def testTimeAdaptation(cfg, loader, processor, logger):
     logger.info(f"per domain catAvgErr: {100. - catAvg.mean() * 100.:.2f}")
 
     print("average adaptation time:", np.mean(times))
-    wandb.run.summary["average_adaptation_time"] = np.mean(times)
+    # wandb.run.summary["average_adaptation_time"] = np.mean(times)
 
 
 def main():
@@ -195,7 +197,7 @@ def main():
         cfg, cfg.CORRUPTION.DATASET, cfg.CORRUPTION.TYPE, cfg.CORRUPTION.SEVERITY
     )
     mark = cfg.MARK
-    wandb.login(key="")
+    # wandb.login(key="")
 
     for adapter_config_file in args.adapter_config_file:
         processor.reset()
@@ -212,15 +214,15 @@ def main():
         if cfg.OUTPUT_DIR:
             mkdir(cfg.OUTPUT_DIR)
 
-            wandb.init(
-                # set the wandb project where this run will be logged
-                project="UniTTA",
-                name=cfg.WANDB.NAME,
-                mode=cfg.WANDB.MODE,
-                # track hyperparameters and run metadata
-                config=cfg,
-                reinit=True,
-            )
+            # wandb.init(
+            #    # set the wandb project where this run will be logged
+            #    project="UniTTA",
+            #    name=cfg.WANDB.NAME,
+            #    mode=cfg.WANDB.MODE,
+            #    # track hyperparameters and run metadata
+            #    config=cfg,
+            #    reinit=True,
+            # )
 
         clear_loggers()
         logger = setup_logger("TTA", cfg.OUTPUT_DIR, 0, filename=cfg.LOG_DEST)

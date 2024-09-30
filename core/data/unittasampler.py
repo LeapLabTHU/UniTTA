@@ -72,7 +72,7 @@ class UniTTASampler(Sampler):
         start = time.time()
         self.sampling()
         self.sampling_time = time.time() - start
-        print("sampling done, time: {self.sampling_time}")
+        print(f"sampling done, time: {self.sampling_time}")
 
         print("checking data...")
         self.check_data()

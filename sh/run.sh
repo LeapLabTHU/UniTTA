@@ -18,9 +18,9 @@ for dataset in {cifar10,cifar100,imagenet,}; do
 
 					protocol=unitta
 
-					wandb_mode=online
+					#wandb_mode=online
 					#wandb_mode=offline
-					#wandb_mode=disabled
+					wandb_mode=disabled
 					wandb_name=unitta
 
 					if [ ${dataset} == "cifar100" ]; then
