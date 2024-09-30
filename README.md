@@ -60,7 +60,7 @@ Download [CIFAR-10-C](https://zenodo.org/record/2535967#.ZDETTHZBxhF), [CIFAR-10
 /home/data/
 ├── CIFAR-10-C
 ├── CIFAR-100-C
-├── ImageNet-C
+└── ImageNet-C
 ```
 
 ### Test-Time Adaptation
