@@ -1,6 +1,6 @@
 # UniTTA: Unified Benchmark and Versatile Framework Towards Realistic Test-Time Adaptation
 
-Authors: [Chaoqun Du](https://scholar.google.com/citations?user=0PSKJuYAAAAJ&hl=en),
+Authors: [Chaoqun Du](https://andy-du20.github.io/),
 [Yulin Wang](https://www.wyl.cool/),
 [Jiayi Guo](https://www.jiayiguo.net/),
 [Yizeng Han](https://yizenghan.top/),
