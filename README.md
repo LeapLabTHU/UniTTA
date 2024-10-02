@@ -14,6 +14,11 @@ Jie Zhou,
 <p align="center">
     <img src="figures/benchmark.png"  alt="fig1" />
 </p>
+
+<p align="center">
+    <img src="figures/sampling.png"  alt="fig1" />
+</p>
+
 We propose a Unified Test-Time Adaptation (UniTTA) benchmark that is both comprehensive and widely applicable. We present a novel method for constructing test data of
 various scenarios using a defined Markov state transition matrix. The UniTTA benchmark can assist researchers in evaluating their methods in a more comprehensive and realistic manner, facilitating the development of versatile and robust TTA methods. Moreover, it also provides a evaluating benchmark for practitioners to select the most suitable TTA method for their specific scenarios.
 
