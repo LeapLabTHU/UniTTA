@@ -14,24 +14,17 @@ Jie Zhou,
 <p align="center">
     <img src="figures/benchmark.png"  alt="fig1" />
 </p>
-
-The general idea of SimPro addressing the ReaLTSSL
-problem. (a) Current methods typically rely on predefined or
-assumed class distribution patterns for unlabeled data, limiting
-their applicability. (b) In contrast, our SimPro embraces a more
-realistic scenario by introducing a simple and elegant framework
-that operates effectively without making any assumptions about
-the distribution of unlabeled data. This paradigm shift allows for
-greater flexibility and applicability in diverse ReaLTSSL scenarios.
+We propose a Unified Test-Time Adaptation (UniTTA) benchmark that is both comprehensive and widely applicable. We present a novel method for constructing test data of
+various scenarios using a defined Markov state transition matrix. The UniTTA benchmark can assist researchers in evaluating their methods in a more comprehensive and realistic manner, facilitating the development of versatile and robust TTA methods. Moreover, it also provides a evaluating benchmark for practitioners to select the most suitable TTA method for their specific scenarios.
 
 <p align="center">
     <img src="figures/framework.png"  alt="fig2" />
 </p>
 
-The SimPro Framework Overview. This framework distinctively separates the conditional and marginal (class) distributions.
-In the E-step (top), pseudo-labels are generated using the current parameters $\theta$ and $\pi$.
-In the subsequent M-step (bottom), these pseudo-labels, along with the ground-truth labels, are utilized to compute the Cross-Entropy loss, facilitating the optimization of network parameters $\theta$ via gradient descent.
-Concurrently, the marginal distribution parameter $\pi$ is recalculated using a closed-form solution based on the generated pseudo-labels.
+Alongside this benchmark, we propose a versatile UniTTA framework, which includes a Balanced Domain Normalization (BDN) layer and a Correlated Feature Adaptation (COFA) method–designed to mitigate distribution gaps in domain and class, respectively.
+Our primary insight is to unify both domain-aware and class-aware normalization. We compute the statistics for each class within each domain and then average
+across classes to obtain balanced domain-wise statistics, mitigating the impact of class imbalance on domain-wise statistics. During prediction, we select the corresponding statistics based on the current sample’s domain, effectively addressing domain non-i.i.d and imbalance.
+Moreover, to address potential temporal correlation of class, we leverage the correlation characteristic by referencing the feature of the previous sample, resulting in an effective and efficient method named COFA (Correlated Feature Adaptation), without requiring any modifications to model parameters.
 
 ## Get Started
 
