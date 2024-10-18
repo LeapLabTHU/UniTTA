@@ -109,7 +109,7 @@ _C.CUDNN.BENCHMARK = True
 # ---------------------------------- Misc options --------------------------- #
 
 _C.DESC = ""
-_C.SEED = 425
+_C.SEED = 0
 _C.OUTPUT_DIR = "./output"
 _C.DATA_DIR = "/home/data"
 _C.CKPT_DIR = "./ckpt"
