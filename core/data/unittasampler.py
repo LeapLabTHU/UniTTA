@@ -19,8 +19,8 @@ class UniTTASampler(Sampler):
         num_domains,
         num_classes,
         max_state_samples,  # criteria for stopping
-        # domain_transition_list=None,  # for cor_factor = 1, default is range(num_domains)
-        # class_transition_list=None,  # for cor_factor = 1, default is range(num_classes)
+        domain_transition_list=None,  # for cor_factor = 1, default is range(num_domains)
+        class_transition_list=None,  # for cor_factor = 1, default is range(num_classes)
         init_domain=0,
         init_class=0,
         domain_head2tail_list=None,  # default is range(num_domains)
@@ -42,11 +42,36 @@ class UniTTASampler(Sampler):
 
         self.imb_factor = {"domain": imb_factor_domain, "class": imb_factor_class}
         self.num = {"domain": num_domains, "class": num_classes}
+        self.transition_list = {
+            "domain": (
+                domain_transition_list
+                if domain_transition_list is not None
+                else list(range(num_domains))
+            ),
+            "class": (
+                class_transition_list
+                if class_transition_list is not None
+                else list(range(num_classes))
+            ),
+        }
+
         self.current_state = {
             "domain": init_domain,
             "class": init_class,
         }
 
+        # self.transition_list = {
+        #    "domain": (
+        #        domain_transition_list
+        #        if domain_transition_list is not None
+        #        else list(range(num_domains))
+        #    ),
+        #    "class": (
+        #        class_transition_list
+        #        if class_transition_list is not None
+        #        else list(range(num_classes))
+        #    ),
+        # }
         self.head2tail_list = {
             "domain": (
                 domain_head2tail_list
@@ -60,21 +85,21 @@ class UniTTASampler(Sampler):
             ),
         }
 
-        print("loading data...")
+        print(f"loading data...")
         self.load_data()
-        print("load data done")
+        print(f"load data done")
 
-        print("preparing sampling...")
+        print(f"preparing sampling...")
         self.prepare_sampling()
-        print("prepare sampling done")
+        print(f"prepare sampling done")
 
-        print("sampling...")
+        print(f"sampling...")
         start = time.time()
         self.sampling()
         self.sampling_time = time.time() - start
         print(f"sampling done, time: {self.sampling_time}")
 
-        print("checking data...")
+        print(f"checking data...")
         self.check_data()
 
     def load_data(self):
@@ -99,7 +124,6 @@ class UniTTASampler(Sampler):
             for i, item in enumerate(self.data_source):
                 self.raw_indices[(item.domain, item.label)].append(i)
 
-        # 随机打乱每个(domain, class)对应的索引
         for domain in range(self.num["domain"]):
             for label in range(self.num["class"]):
                 random.shuffle(self.raw_indices[domain, label])
@@ -154,6 +178,9 @@ class UniTTASampler(Sampler):
         print(f"self.transition_matrix['domain']: {transition_matrix['domain']}")
         print(f"self.transition_matrix['class']: {transition_matrix['class']}")
 
+        # self.transition_matrix = np.kron(
+        #    transition_matrix["domain"], transition_matrix["class"]
+        # )
         self.transition_matrix = torch.kron(
             torch.from_numpy(transition_matrix["domain"]),
             torch.from_numpy(transition_matrix["class"]),
@@ -175,6 +202,16 @@ class UniTTASampler(Sampler):
             fill_value=True,
             dtype=bool,
         )
+        for domain in range(self.num["domain"]):
+            for label in range(self.num["class"]):
+                if len(self.raw_indices[domain, label]) == 0:
+                    self.valid_presampling_states[
+                        domain * self.num["class"] + label
+                    ] = False
+
+        # record the number of samples for each (domain, class) for each presampling state
+        # record the number of samples for each (domain, class) for each presampling state
+        # and reset to 0 when re-presampling
         self.used_num_sampled_domain_class = np.zeros(
             (self.num["domain"] * self.num["class"]), dtype=int
         )
@@ -209,9 +246,24 @@ class UniTTASampler(Sampler):
             valid_states = np.arange(self.num["domain"] * self.num["class"])[
                 self.valid_presampling_states
             ]
+
+            if self.cor_factor_max["domain"] == 1:
+                next_domain = self.transition_list["domain"][
+                    current_state["domain"] + 1
+                ]
+                valid_states = valid_states[
+                    valid_states // self.num["class"] == next_domain
+                ]
+            if self.cor_factor_max["class"] == 1:
+                next_class = self.transition_list["class"][current_state["class"] + 1]
+                valid_states = valid_states[
+                    valid_states % self.num["class"] == next_class
+                ]
+
             self.presampling_states[state_index][0] = np.random.choice(
                 valid_states, size=1
             )
+
             self.used_num_sampled_domain_class[state_index] = 0
 
         elif p.sum() == 0 and self.valid_presampling_states[state_index]:
@@ -331,6 +383,12 @@ class UniTTASampler(Sampler):
         return index
 
     def check_data(self):
+        # states = self.num["domain"] * self.num["class"]
+        # for index in self.indices:
+        #    print(
+        #        f"domain: {index % states // self.num['class']}, class: {index % states % self.num['class']}"
+        #    )
+
         print(f"self.transition_matrix: {self.transition_matrix}")
 
         print(
@@ -422,6 +480,12 @@ class UniTTASampler(Sampler):
     def __len__(self):
         return len(self.indices)
 
+    # ... existing methods ...
+    #
+    #
+    #
+    #
+
 
 if __name__ == "__main__":
     np.set_printoptions(linewidth=np.inf, precision=3)
@@ -431,22 +495,19 @@ if __name__ == "__main__":
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed_all(random_seed)
 
-    # for cor_factor_max_class in [0.001, 0.95]:
-    for cor_factor_max_class in [
-        1,
-    ]:
+    for cor_factor_max_class in [0.001, 0.95]:
         for imb_factor_class in [1, 10]:
-            for cor_factor_max_domain in [0.067, 0.85, 1]:
+            for cor_factor_max_domain in [0.067, 0.85]:
                 for imb_factor_domain in [1, 5]:
                     # for imb_factor_domain in [
                     #    5,
                     # ]:
                     print("-" * 100)
 
-                    # print(
-                    #    f"cor_factor_max_domain: {cor_factor_max_domain}, imb_factor_domain: {imb_factor_domain}, cor_factor_max_class: {cor_factor_max_class}, imb_factor_class: {imb_factor_class}"
-                    # )
-                    #
+                    print(f"cor_factor_max_class: {cor_factor_max_class}")
+                    print(f"imb_factor_class: {imb_factor_class}")
+                    print(f"cor_factor_max_domain: {cor_factor_max_domain}")
+                    print(f"imb_factor_domain: {imb_factor_domain}")
 
                     # cor_factor_max_domain = 0.85
                     # imb_factor_domain = 1
@@ -486,13 +547,13 @@ if __name__ == "__main__":
                     if cor_factor_max_class == 0.95:
                         if cor_factor_max_domain == 0.85:
                             max_state_samples = 100
-                        elif cor_factor_max_domain == 0.067 and imb_factor_domain == 1:
-                            max_state_samples = 50
+                        # elif cor_factor_max_domain == 0.067 and imb_factor_domain == 1:
+                        #    max_state_samples = 50
                         else:
-                            max_state_samples = 10
+                            max_state_samples = 100
 
                     else:
-                        max_state_samples = 10
+                        max_state_samples = 100
 
                     sampler = UniTTASampler(
                         data_source=None,
