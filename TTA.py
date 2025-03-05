@@ -199,44 +199,45 @@ def main():
     mark = cfg.MARK
     # wandb.login(key="")
 
-    for adapter_config_file in args.adapter_config_file:
-        processor.reset()
-        cfg.defrost()
-        cfg.merge_from_file(adapter_config_file)
-        cfg.MARK = f"{mark}_{cfg.ADAPTER.NAME}"
-        cfg.OUTPUT_DIR = f"output/{cfg.MARK}"
-        cfg.freeze()
+    adapter_config_file = args.adapter_config_file
 
-        ds = cfg.CORRUPTION.DATASET
-        adapter = cfg.ADAPTER.NAME
-        setproctitle(f"TTA:{ds:>8s}:{adapter:<10s}")
+    processor.reset()
+    cfg.defrost()
+    cfg.merge_from_file(adapter_config_file)
+    cfg.MARK = f"{mark}_{cfg.ADAPTER.NAME}"
+    cfg.OUTPUT_DIR = f"output/{cfg.MARK}"
+    cfg.freeze()
 
-        if cfg.OUTPUT_DIR:
-            mkdir(cfg.OUTPUT_DIR)
+    ds = cfg.CORRUPTION.DATASET
+    adapter = cfg.ADAPTER.NAME
+    setproctitle(f"TTA:{ds:>8s}:{adapter:<10s}")
 
-            # wandb.init(
-            #    # set the wandb project where this run will be logged
-            #    project="UniTTA",
-            #    name=cfg.WANDB.NAME,
-            #    mode=cfg.WANDB.MODE,
-            #    # track hyperparameters and run metadata
-            #    config=cfg,
-            #    reinit=True,
-            # )
+    if cfg.OUTPUT_DIR:
+        mkdir(cfg.OUTPUT_DIR)
 
-        clear_loggers()
-        logger = setup_logger("TTA", cfg.OUTPUT_DIR, 0, filename=cfg.LOG_DEST)
-        logger.info(args)
+        # wandb.init(
+        #    # set the wandb project where this run will be logged
+        #    project="UniTTA",
+        #    name=cfg.WANDB.NAME,
+        #    mode=cfg.WANDB.MODE,
+        #    # track hyperparameters and run metadata
+        #    config=cfg,
+        #    reinit=True,
+        # )
 
-        logger.info(
-            f"Loaded configuration file: \n"
-            f"\tadapter: {args.adapter_config_file}\n"
-            f"\tdataset: {args.dataset_config_file}\n"
-            f"\torder: {args.order_config_file}"
-        )
-        logger.info("Running with config:\n{}".format(cfg))
+    clear_loggers()
+    logger = setup_logger("TTA", cfg.OUTPUT_DIR, 0, filename=cfg.LOG_DEST)
+    logger.info(args)
 
-        testTimeAdaptation(cfg, loader, processor, logger)
+    logger.info(
+        f"Loaded configuration file: \n"
+        f"\tadapter: {args.adapter_config_file}\n"
+        f"\tdataset: {args.dataset_config_file}\n"
+        f"\torder: {args.order_config_file}"
+    )
+    logger.info("Running with config:\n{}".format(cfg))
+
+    testTimeAdaptation(cfg, loader, processor, logger)
 
 
 if __name__ == "__main__":
